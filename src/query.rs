@@ -6,7 +6,8 @@ use cosmwasm_std::{Uint128};
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct SwapDetailsResponse {
     pub name: String,
-    pub address: String,
+    pub receiver: String,
+    pub swap_address: String,
     pub token1_amount: Uint128,
     pub code_id: u64
 }

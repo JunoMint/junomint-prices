@@ -10,7 +10,8 @@ pub struct EmptyInstantiateMsg {}
 pub enum ExecuteMsg {
     SwapDetails {
         name: String,
-        address: String,
+        receiver: String,
+        swap_address: String,
         token1_amount: Uint128,
         code_id: u64
     }

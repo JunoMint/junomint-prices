@@ -31,12 +31,19 @@ pub fn execute_set_swap_details(
     _env: Env,
     _info: MessageInfo,
     name: String,
-    address: String,
+    receiver: String,
+    swap_address: String,
     token1_amount: Uint128,
     code_id: u64
 ) -> Result<Response, ContractError> {
-    let swap_details: SwapDetails = SwapDetails { name, address, token1_amount, code_id, };
-    SWAP_DETAILS.save(deps.storage, &code_id.to_string(),&swap_details);
+    let swap_details: SwapDetails = SwapDetails {
+        name,
+        receiver,
+        swap_address,
+        token1_amount,
+        code_id,
+    };
+    SWAP_DETAILS.save(deps.storage, &code_id.to_string(),&swap_details).ok();
     Ok(Response::default())
 }
 
@@ -48,14 +55,21 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::SwapDetails { name, address, token1_amount, code_id }
+        ExecuteMsg::SwapDetails {
+            name,
+            receiver,
+            swap_address,
+            token1_amount,
+            code_id
+        }
         => {
             Ok(execute_set_swap_details(
                 deps,
                 env,
                 info,
                 name,
-                address,
+                receiver,
+                swap_address,
                 token1_amount,
                 code_id,
             )?)
@@ -67,7 +81,7 @@ pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceRe
     let swap_details: SwapDetails = SWAP_DETAILS.load(deps.storage, &code_id.to_string())?;
     let res: Token1ForToken2PriceResponse = deps.querier
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
-            contract_addr: swap_details.address,
+            contract_addr: swap_details.swap_address,
             msg: to_binary(&wasmswap::msg::QueryMsg::Token1ForToken2Price {
                 token1_amount: swap_details.token1_amount
             })?,
@@ -79,7 +93,8 @@ pub fn query_swap_details(deps: Deps, code_id: u64) -> StdResult<SwapDetailsResp
     let swap_details: SwapDetails = SWAP_DETAILS.load(deps.storage, &code_id.to_string())?;
     Ok(SwapDetailsResponse{
         name: swap_details.name,
-        address: swap_details.address,
+        receiver: swap_details.receiver,
+        swap_address: swap_details.swap_address,
         token1_amount: swap_details.token1_amount,
         code_id: swap_details.code_id,
     })

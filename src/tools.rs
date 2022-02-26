@@ -1,7 +1,8 @@
-use cosmwasm_std::{BankMsg, Coin, CosmosMsg, MessageInfo, Response, StdResult, SubMsg, Uint128};
+use cosmwasm_std::{BankMsg, Coin, CosmosMsg, Deps, MessageInfo, QueryRequest, Response, StdResult, SubMsg, to_binary, Uint128, WasmQuery};
+use wasmswap::msg::Token1ForToken2PriceResponse;
 use crate::error::PaymentError;
 use crate::query::SwapDetailsResponse;
-use crate::state::SwapDetails;
+use crate::state::{SWAP_DETAILS, SwapDetails};
 
 pub fn coin_amount(info: &MessageInfo, amount: Uint128) -> Result<Coin, PaymentError> {
     match info.funds.len() {
@@ -51,4 +52,23 @@ pub fn send_payment(sender: String, receiver: String, coin: Vec<Coin>) -> StdRes
         .add_attribute("action", "execute")
         .add_attribute("owner", sender)
     )
+}
+
+pub fn query_contract_price(
+    deps: Deps,
+    contract_addr: String,
+    token1_amount: Uint128
+) -> Token1ForToken2PriceResponse {
+    deps.querier
+        .query(&QueryRequest::Wasm(WasmQuery::Smart {
+            contract_addr,
+            msg: to_binary(&wasmswap::msg::QueryMsg::Token1ForToken2Price {
+                token1_amount
+            }).unwrap(),
+        })).unwrap()
+}
+
+pub fn query_code_price(deps: Deps, code_id: u64) -> Token1ForToken2PriceResponse {
+    let swap_details: SwapDetails = SWAP_DETAILS.load(deps.storage, &code_id.to_string()).unwrap();
+    query_contract_price(deps, swap_details.swap_address, swap_details.token1_amount)
 }

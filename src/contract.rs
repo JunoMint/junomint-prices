@@ -1,6 +1,5 @@
 use cosmwasm_std::{
-    entry_point, to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult,
-    Uint128, QueryRequest, WasmQuery
+    entry_point, to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Uint128
 };
 
 use cw2::set_contract_version;
@@ -80,14 +79,11 @@ pub fn execute(
 
 pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceResponse> {
     let swap_details: SwapDetails = SWAP_DETAILS.load(deps.storage, &code_id.to_string())?;
-    let res: Token1ForToken2PriceResponse = deps.querier
-        .query(&QueryRequest::Wasm(WasmQuery::Smart {
-            contract_addr: swap_details.swap_address,
-            msg: to_binary(&wasmswap::msg::QueryMsg::Token1ForToken2Price {
-                token1_amount: swap_details.token1_amount
-            })?,
-        }))?;
-    Ok(res)
+    Ok(tools::query_contract_price(
+        deps,
+        swap_details.swap_address,
+        swap_details.token1_amount
+    ))
 }
 
 pub fn query_swap_details(deps: Deps, code_id: u64) -> StdResult<SwapDetailsResponse> {
@@ -98,7 +94,7 @@ pub fn query_swap_details(deps: Deps, code_id: u64) -> StdResult<SwapDetailsResp
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
-        QueryMsg::Price {code_id} => to_binary(&query_price(deps, code_id)?),
+        QueryMsg::Token1ForToken2Price {code_id} => to_binary(&query_price(deps, code_id)?),
         QueryMsg::SwapDetails {code_id} => to_binary(&query_swap_details(deps, code_id)?)
     }
 }

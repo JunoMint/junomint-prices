@@ -15,7 +15,7 @@ pub struct SwapDetailsResponse {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
-    Price {
+    Token1ForToken2Price {
         code_id: u64
     },
     SwapDetails {

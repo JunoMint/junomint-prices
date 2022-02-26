@@ -1,0 +1,45 @@
+[package]
+name = "junomint-prices"
+version = "0.12.1"
+authors = ["keupsonite <keupsonite@protonmail.com"]
+edition = "2018"
+description = "JunoMint Prices"
+license = "Apache-2.0"
+repository = "https://github.com/JunoMint/junomint-prices"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+codegen-units = 1
+panic = 'abort'
+incremental = false
+overflow-checks = true
+
+[features]
+backtraces = ["cosmwasm-std/backtraces"]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+
+[dependencies]
+cw-utils = { version = "0.12.1" }
+cw2 = { version = "0.12.1" }
+cw20 = { version = "0.12.1" }
+cw20-base = { version = "0.12.1", features = ["library"] }
+cw-storage-plus = { version = "0.12.1" }
+cosmwasm-std = { version = "1.0.0-beta5", default-features = false, features = [] }
+schemars = "0.8.1"
+serde = { version = "1.0.103", default-features = false, features = ["derive"] }
+thiserror = { version = "1.0.23" }
+rust_decimal = { version = "1.14.3" }
+integer-sqrt = { version = "0.1.5" }
+integer-cbrt = { version = "0.1.2" }
+wasmswap = { version = "1.0.0-beta", features = ["library"]}
+
+[dev-dependencies]
+cosmwasm-schema = { version = "1.0.0-beta5" }

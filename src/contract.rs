@@ -6,7 +6,6 @@ use cosmwasm_std::{
 use cw2::set_contract_version;
 
 use wasmswap::msg::{Token1ForToken2PriceResponse};
-use wasm::msg::MsgInstantiateContract;
 
 use crate::error::ContractError;
 use crate::msg::{EmptyInstantiateMsg, ExecuteMsg};

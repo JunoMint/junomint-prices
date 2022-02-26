@@ -11,6 +11,7 @@ use crate::error::ContractError;
 use crate::msg::{EmptyInstantiateMsg, ExecuteMsg};
 use crate::query::{QueryMsg, SwapDetailsResponse};
 use crate::state::{SWAP_DETAILS, SwapDetails};
+use crate::tools;
 
 const CONTRACT_NAME: &str = "crates.io:junomint-prices";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -91,13 +92,7 @@ pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceRe
 
 pub fn query_swap_details(deps: Deps, code_id: u64) -> StdResult<SwapDetailsResponse> {
     let swap_details: SwapDetails = SWAP_DETAILS.load(deps.storage, &code_id.to_string())?;
-    Ok(SwapDetailsResponse{
-        name: swap_details.name,
-        receiver: swap_details.receiver,
-        swap_address: swap_details.swap_address,
-        token1_amount: swap_details.token1_amount,
-        code_id: swap_details.code_id,
-    })
+    tools::convert_to_swap_details_response(swap_details)
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]

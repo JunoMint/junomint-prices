@@ -12,7 +12,7 @@ use crate::msg::{EmptyInstantiateMsg, ExecuteMsg};
 use crate::query::{QueryMsg, SwapDetailsResponse};
 use crate::state::{SWAP_DETAILS, SwapDetails};
 
-const CONTRACT_NAME: &str = "crates.io:cw20-instantiator";
+const CONTRACT_NAME: &str = "crates.io:junomint-prices";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[cfg_attr(not(feature = "library"), entry_point)]

@@ -1,6 +1,4 @@
-use cosmwasm_std::{
-    entry_point, to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Uint128
-};
+use cosmwasm_std::{entry_point, to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Uint128, StdError};
 
 use cw2::set_contract_version;
 
@@ -78,7 +76,13 @@ pub fn execute(
 }
 
 pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceResponse> {
-    let swap_details = SWAP_DETAILS.load(deps.storage, &code_id.to_string())?;
+    if !SWAP_DETAILS.has(deps.storage, &code_id.to_string()) {
+        return Err(StdError::generic_err("Code ID not found"))
+    }
+    let swap_details: SwapDetails = SWAP_DETAILS.load(
+        deps.storage,
+        &code_id.to_string()
+    )?;
     Ok(tools::query_contract_price(
         deps,
         swap_details.swap_address,
@@ -87,7 +91,10 @@ pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceRe
 }
 
 pub fn query_swap_details(deps: Deps, code_id: u64) -> StdResult<SwapDetailsResponse> {
-    let swap_details = SWAP_DETAILS.load(
+    if !SWAP_DETAILS.has(deps.storage, &code_id.to_string()) {
+        return Err(StdError::generic_err("Code ID not found"))
+    }
+    let swap_details: SwapDetails = SWAP_DETAILS.load(
         deps.storage,
         &code_id.to_string()
     )?;

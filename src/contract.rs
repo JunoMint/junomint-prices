@@ -32,16 +32,16 @@ pub fn execute_set_swap_details(
     receiver: String,
     swap_address: String,
     token1_amount: Uint128,
-    code_id: u64
+    type_code: String
 ) -> Result<Response, ContractError> {
     let swap_details = SwapDetails {
         name,
         receiver,
         swap_address,
         token1_amount,
-        code_id,
+        type_code: type_code.clone(),
     };
-    SWAP_DETAILS.save(deps.storage, &code_id.to_string(),&swap_details).ok();
+    SWAP_DETAILS.save(deps.storage, &type_code,&swap_details).ok();
     Ok(Response::default())
 }
 
@@ -58,7 +58,7 @@ pub fn execute(
             receiver,
             swap_address,
             token1_amount,
-            code_id
+            type_code
         }
         => {
             Ok(execute_set_swap_details(
@@ -69,19 +69,19 @@ pub fn execute(
                 receiver,
                 swap_address,
                 token1_amount,
-                code_id,
+                type_code,
             )?)
         },
     }
 }
 
-pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceResponse> {
-    if !SWAP_DETAILS.has(deps.storage, &code_id.to_string()) {
-        return Err(StdError::generic_err("Code ID not found"))
+pub fn query_price(deps: Deps, type_code: String) -> StdResult<Token1ForToken2PriceResponse> {
+    if !SWAP_DETAILS.has(deps.storage, &type_code) {
+        return Err(StdError::generic_err("Details not found"))
     }
     let swap_details: SwapDetails = SWAP_DETAILS.load(
         deps.storage,
-        &code_id.to_string()
+        &type_code
     )?;
     Ok(tools::query_contract_price(
         deps,
@@ -90,13 +90,13 @@ pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceRe
     )?)
 }
 
-pub fn query_swap_details(deps: Deps, code_id: u64) -> StdResult<SwapDetailsResponse> {
-    if !SWAP_DETAILS.has(deps.storage, &code_id.to_string()) {
+pub fn query_swap_details(deps: Deps, type_code: String) -> StdResult<SwapDetailsResponse> {
+    if !SWAP_DETAILS.has(deps.storage, &type_code) {
         return Err(StdError::generic_err("Code ID not found"))
     }
     let swap_details: SwapDetails = SWAP_DETAILS.load(
         deps.storage,
-        &code_id.to_string()
+        &type_code
     )?;
     swap_details.convert_to_response()
 }
@@ -104,7 +104,7 @@ pub fn query_swap_details(deps: Deps, code_id: u64) -> StdResult<SwapDetailsResp
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
-        QueryMsg::Token1ForToken2Price {code_id} => to_binary(&query_price(deps, code_id)?),
-        QueryMsg::SwapDetails {code_id} => to_binary(&query_swap_details(deps, code_id)?)
+        QueryMsg::Token1ForToken2Price { type_code } => to_binary(&query_price(deps, type_code)?),
+        QueryMsg::SwapDetails {type_code} => to_binary(&query_swap_details(deps, type_code)?)
     }
 }

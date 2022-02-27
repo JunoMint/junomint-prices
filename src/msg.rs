@@ -13,6 +13,6 @@ pub enum ExecuteMsg {
         receiver: String,
         swap_address: String,
         token1_amount: Uint128,
-        code_id: u64
+        type_code: String
     }
 }

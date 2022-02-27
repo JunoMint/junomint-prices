@@ -1,6 +1,6 @@
 use cosmwasm_std::{BankMsg, Coin, CosmosMsg, Deps, MessageInfo, QueryRequest, Response, StdResult, SubMsg, to_binary, Uint128, WasmQuery};
 use wasmswap::msg::Token1ForToken2PriceResponse;
-use crate::{ContractError, query};
+use crate::{query};
 use crate::error::PaymentError;
 use crate::query::SwapDetailsResponse;
 use crate::state::{SwapDetails};
@@ -43,7 +43,7 @@ pub fn convert_to_swap_details_response(
     })
 }
 
-pub fn send_payment(sender: String, receiver: String, coin: Vec<Coin>) -> Result<Response, ContractError> {
+pub fn send_payment(sender: String, receiver: String, coin: Vec<Coin>) -> StdResult<Response> {
     let send_msg = SubMsg::new(CosmosMsg::Bank(BankMsg::Send {
         to_address: receiver.clone(),
         amount: coin
@@ -59,38 +59,38 @@ pub fn query_contract_price(
     deps: Deps,
     contract_addr: String,
     token1_amount: Uint128
-) -> Token1ForToken2PriceResponse {
-    deps.querier
+) -> StdResult<Token1ForToken2PriceResponse> {
+    Ok(deps.querier
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
             contract_addr,
             msg: to_binary(&wasmswap::msg::QueryMsg::Token1ForToken2Price {
                 token1_amount
-            }).unwrap(),
-        })).unwrap()
+            })?,
+        }))?)
 }
 
 pub fn query_code_price(
     deps: Deps,
     contract_addr: String,
     code_id: u64
-) -> SwapDetailsResponse {
+) -> StdResult<SwapDetailsResponse> {
     let details: SwapDetailsResponse = deps.querier
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
             contract_addr,
             msg: to_binary(&query::QueryMsg::SwapDetails {
                 code_id
-            }).unwrap(),
-        })).unwrap();
+            })?,
+        }))?;
     let price: Token1ForToken2PriceResponse = query_contract_price(
         deps,
         details.swap_address.clone(),
         details.token1_amount
-    );
-    SwapDetailsResponse {
+    )?;
+    Ok(SwapDetailsResponse {
         name: details.name,
         receiver: details.receiver,
         swap_address: details.swap_address,
         token1_amount: price.token2_amount,
         code_id
-    }
+    })
 }

@@ -83,7 +83,7 @@ pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceRe
         deps,
         swap_details.swap_address,
         swap_details.token1_amount
-    ))
+    )?)
 }
 
 pub fn query_swap_details(deps: Deps, code_id: u64) -> StdResult<SwapDetailsResponse> {

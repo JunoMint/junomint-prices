@@ -73,7 +73,7 @@ pub fn query_code_price(
     deps: Deps,
     contract_addr: String,
     code_id: u64
-) -> Token1ForToken2PriceResponse {
+) -> SwapDetailsResponse {
     let details: SwapDetailsResponse = deps.querier
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
             contract_addr,
@@ -81,5 +81,16 @@ pub fn query_code_price(
                 code_id
             }).unwrap(),
         })).unwrap();
-    query_contract_price(deps, details.swap_address, details.token1_amount)
+    let price: Token1ForToken2PriceResponse = query_contract_price(
+        deps,
+        details.swap_address.clone(),
+        details.token1_amount
+    );
+    SwapDetailsResponse {
+        name: details.name,
+        receiver: details.receiver,
+        swap_address: details.swap_address,
+        token1_amount: price.token2_amount,
+        code_id
+    }
 }

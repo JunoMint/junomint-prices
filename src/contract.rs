@@ -87,8 +87,11 @@ pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceRe
 }
 
 pub fn query_swap_details(deps: Deps, code_id: u64) -> StdResult<SwapDetailsResponse> {
-    let swap_details: SwapDetails = SWAP_DETAILS.load(deps.storage, &code_id.to_string())?;
-    tools::convert_to_swap_details_response(swap_details)
+    let swap_details: SwapDetails = SWAP_DETAILS.load(
+        deps.storage,
+        &code_id.to_string()
+    )?;
+    swap_details.convert_to_response()
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]

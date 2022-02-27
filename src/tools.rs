@@ -3,7 +3,6 @@ use wasmswap::msg::Token1ForToken2PriceResponse;
 use crate::{query};
 use crate::error::PaymentError;
 use crate::query::SwapDetailsResponse;
-use crate::state::{SwapDetails};
 
 pub fn coin_amount(info: &MessageInfo, amount: Uint128) -> Result<Coin, PaymentError> {
     match info.funds.len() {
@@ -29,18 +28,6 @@ pub fn must_pay_amount(info: &MessageInfo, denom: &str, amount: Uint128) -> Resu
     } else {
         Ok(coin.amount)
     }
-}
-
-pub fn convert_to_swap_details_response(
-    swap_details: SwapDetails
-) -> StdResult<SwapDetailsResponse> {
-    Ok(SwapDetailsResponse{
-        name: swap_details.name,
-        receiver: swap_details.receiver,
-        swap_address: swap_details.swap_address,
-        token1_amount: swap_details.token1_amount,
-        code_id: swap_details.code_id,
-    })
 }
 
 pub fn send_payment(sender: String, receiver: String, coin: Vec<Coin>) -> StdResult<Response> {

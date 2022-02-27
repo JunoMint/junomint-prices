@@ -1,5 +1,6 @@
 use cosmwasm_std::{BankMsg, Coin, CosmosMsg, Deps, MessageInfo, QueryRequest, Response, StdResult, SubMsg, to_binary, Uint128, WasmQuery};
 use wasmswap::msg::Token1ForToken2PriceResponse;
+use crate::ContractError;
 use crate::error::PaymentError;
 use crate::query::SwapDetailsResponse;
 use crate::state::{SWAP_DETAILS, SwapDetails};
@@ -42,7 +43,7 @@ pub fn convert_to_swap_details_response(
     })
 }
 
-pub fn send_payment(sender: String, receiver: String, coin: Vec<Coin>) -> StdResult<Response> {
+pub fn send_payment(sender: String, receiver: String, coin: Vec<Coin>) -> Result<Response, ContractError> {
     let send_msg = SubMsg::new(CosmosMsg::Bank(BankMsg::Send {
         to_address: receiver.clone(),
         amount: coin

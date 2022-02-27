@@ -30,16 +30,15 @@ pub fn must_pay_amount(info: &MessageInfo, denom: &str, amount: Uint128) -> Resu
     }
 }
 
-pub fn send_payment(sender: String, receiver: String, coin: Vec<Coin>) -> StdResult<Response> {
+pub fn send_payment(sender: String, receiver: String, coin: Vec<Coin>) -> Response<> {
     let send_msg = SubMsg::new(CosmosMsg::Bank(BankMsg::Send {
         to_address: receiver.clone(),
         amount: coin
     }));
-    Ok(Response::new()
+    Response::new()
         .add_submessages(vec![send_msg])
         .add_attribute("action", "execute")
         .add_attribute("owner", sender)
-    )
 }
 
 pub fn query_contract_price(

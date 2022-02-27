@@ -36,7 +36,7 @@ pub fn execute_set_swap_details(
     token1_amount: Uint128,
     code_id: u64
 ) -> Result<Response, ContractError> {
-    let swap_details: SwapDetails = SwapDetails {
+    let swap_details = SwapDetails {
         name,
         receiver,
         swap_address,
@@ -78,7 +78,7 @@ pub fn execute(
 }
 
 pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceResponse> {
-    let swap_details: SwapDetails = SWAP_DETAILS.load(deps.storage, &code_id.to_string())?;
+    let swap_details = SWAP_DETAILS.load(deps.storage, &code_id.to_string())?;
     Ok(tools::query_contract_price(
         deps,
         swap_details.swap_address,
@@ -87,7 +87,7 @@ pub fn query_price(deps: Deps, code_id: u64) -> StdResult<Token1ForToken2PriceRe
 }
 
 pub fn query_swap_details(deps: Deps, code_id: u64) -> StdResult<SwapDetailsResponse> {
-    let swap_details: SwapDetails = SWAP_DETAILS.load(
+    let swap_details = SWAP_DETAILS.load(
         deps.storage,
         &code_id.to_string()
     )?;

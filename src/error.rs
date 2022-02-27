@@ -3,6 +3,9 @@ use thiserror::Error;
 
 #[derive(Error, Debug, PartialEq)]
 pub enum PaymentError {
+    #[error("{0}")]
+    Std(#[from] StdError),
+
     #[error("Must send reserve token '{0}'")]
     MissingDenom(String),
 

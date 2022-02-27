@@ -9,7 +9,7 @@ use wasmswap::msg::{Token1ForToken2PriceResponse};
 use crate::error::ContractError;
 use crate::msg::{EmptyInstantiateMsg, ExecuteMsg};
 use crate::query::{QueryMsg, SwapDetailsResponse};
-use crate::state::{SWAP_DETAILS};
+use crate::state::{SwapDetails, SWAP_DETAILS};
 use crate::tools;
 
 const CONTRACT_NAME: &str = "crates.io:junomint-prices";

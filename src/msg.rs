@@ -12,7 +12,7 @@ pub enum ExecuteMsg {
         name: String,
         receiver: String,
         swap_address: String,
-        token1_amount: Uint128,
+        token2_amount: Uint128,
         type_code: String
     }
 }

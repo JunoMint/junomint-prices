@@ -10,7 +10,7 @@ pub struct SwapDetails {
     pub name: String,
     pub receiver: String,
     pub swap_address: String,
-    pub token1_amount: Uint128,
+    pub token2_amount: Uint128,
     pub type_code: String
 }
 
@@ -21,7 +21,7 @@ impl SwapDetails {
             name: swap_details.name,
             receiver: swap_details.receiver,
             swap_address: swap_details.swap_address,
-            token1_amount: swap_details.token1_amount,
+            token2_amount: swap_details.token2_amount,
             type_code: swap_details.type_code,
         })
     }

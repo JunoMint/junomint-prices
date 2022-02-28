@@ -1,6 +1,6 @@
 [package]
 name = "junomint-prices"
-version = "1.0.13"
+version = "1.0.15"
 authors = ["keupsonite <keupsonite@protonmail.com"]
 edition = "2018"
 description = "JunoMint Prices"

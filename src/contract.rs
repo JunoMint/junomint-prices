@@ -2,7 +2,7 @@ use cosmwasm_std::{entry_point, to_binary, Binary, Deps, DepsMut, Env, MessageIn
 
 use cw2::set_contract_version;
 
-use wasmswap::msg::{Token1ForToken2PriceResponse};
+use wasmswap::msg::{Token2ForToken1PriceResponse};
 
 use crate::error::ContractError;
 use crate::msg::{EmptyInstantiateMsg, ExecuteMsg};
@@ -31,14 +31,14 @@ pub fn execute_set_swap_details(
     name: String,
     receiver: String,
     swap_address: String,
-    token1_amount: Uint128,
+    token2_amount: Uint128,
     type_code: String
 ) -> Result<Response, ContractError> {
     let swap_details = SwapDetails {
         name,
         receiver,
         swap_address,
-        token1_amount,
+        token2_amount,
         type_code: type_code.clone(),
     };
     SWAP_DETAILS.save(deps.storage, &type_code,&swap_details).ok();
@@ -57,7 +57,7 @@ pub fn execute(
             name,
             receiver,
             swap_address,
-            token1_amount,
+            token2_amount,
             type_code
         }
         => {
@@ -68,14 +68,14 @@ pub fn execute(
                 name,
                 receiver,
                 swap_address,
-                token1_amount,
+                token2_amount,
                 type_code,
             )?)
         },
     }
 }
 
-pub fn query_price(deps: Deps, type_code: String) -> StdResult<Token1ForToken2PriceResponse> {
+pub fn query_price(deps: Deps, type_code: String) -> StdResult<Token2ForToken1PriceResponse> {
     if !SWAP_DETAILS.has(deps.storage, &type_code) {
         return Err(StdError::generic_err("Details not found"))
     }
@@ -86,13 +86,13 @@ pub fn query_price(deps: Deps, type_code: String) -> StdResult<Token1ForToken2Pr
     Ok(tools::query_contract_price(
         deps,
         swap_details.swap_address,
-        swap_details.token1_amount
+        swap_details.token2_amount
     )?)
 }
 
 pub fn query_swap_details(deps: Deps, type_code: String) -> StdResult<SwapDetailsResponse> {
     if !SWAP_DETAILS.has(deps.storage, &type_code) {
-        return Err(StdError::generic_err("Code ID not found"))
+        return Err(StdError::generic_err("Details not found"))
     }
     let swap_details: SwapDetails = SWAP_DETAILS.load(
         deps.storage,

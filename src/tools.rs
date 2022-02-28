@@ -1,4 +1,4 @@
-use cosmwasm_std::{BankMsg, Coin, CosmosMsg, Deps, MessageInfo, QueryRequest, Response, StdResult, SubMsg, to_binary, Uint128, WasmQuery};
+use cosmwasm_std::{BankMsg, Coin, CosmosMsg, Deps, MessageInfo, QueryRequest, Response, StdError, StdResult, SubMsg, to_binary, Uint128, WasmQuery};
 use wasmswap::msg::Token1ForToken2PriceResponse;
 use crate::{query};
 use crate::error::PaymentError;
@@ -46,13 +46,21 @@ pub fn query_contract_price(
     contract_addr: String,
     token1_amount: Uint128
 ) -> StdResult<Token1ForToken2PriceResponse> {
-    Ok(deps.querier
+    let mut token2: Token1ForToken2PriceResponse = deps.querier
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
             contract_addr,
             msg: to_binary(&wasmswap::msg::QueryMsg::Token1ForToken2Price {
                 token1_amount
             })?,
-        }))?)
+        }))?;
+
+    token2.token2_amount = token2.token2_amount
+        .checked_div(Uint128::new(97))
+        .map_err(StdError::divide_by_zero)?
+        .checked_mul(Uint128::new(100))// LP Fees
+        .map_err(StdError::overflow)?;
+
+    Ok(token2)
 }
 
 pub fn query_code_price(

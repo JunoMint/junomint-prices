@@ -16,3 +16,8 @@ pub enum ExecuteMsg {
         type_code: String
     }
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug, JsonSchema)]
+pub struct MigrateMsg {
+    pub admin: String
+}

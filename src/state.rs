@@ -1,8 +1,8 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use cosmwasm_std::{StdResult, Uint128};
-use cw_storage_plus::{Map};
+use cosmwasm_std::{Addr, StdResult, Uint128};
+use cw_storage_plus::{Item, Map};
 use crate::query::SwapDetailsResponse;
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, JsonSchema, Debug)]
@@ -27,4 +27,10 @@ impl SwapDetails {
     }
 }
 
+#[derive(Serialize, Deserialize, Clone, PartialEq, JsonSchema, Debug)]
+pub struct Admin {
+    pub address: Addr
+}
+
 pub const SWAP_DETAILS: Map<&str, SwapDetails> = Map::new("swap_details");
+pub const ADMIN: Item<Admin> = Item::new("admin");
